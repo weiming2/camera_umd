@@ -62,7 +62,8 @@ Camera::Camera(ros::NodeHandle _comm_nh, ros::NodeHandle _param_nh) :
       info_pub = node.advertise<CameraInfo>("camera_info", 1);
 
       /* initialize the cameras */
-      uvc_cam::Cam::mode_t mode = uvc_cam::Cam::MODE_RGB;
+     // uvc_cam::Cam::mode_t mode = uvc_cam::Cam::MODE_RGB; 
+      uvc_cam::Cam::mode_t mode = uvc_cam::Cam::MODE_YUYV;
       if (format == "jpeg") 
         mode = uvc_cam::Cam::MODE_MJPG;      
       cam = new uvc_cam::Cam(device.c_str(), mode, width, height, fps);
