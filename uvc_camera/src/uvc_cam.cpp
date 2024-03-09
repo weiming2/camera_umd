@@ -12,11 +12,19 @@
 #include <unistd.h>
 #include <ros/console.h>
 #include <err.h>
+#include <opencv2/core/core.hpp>
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 
+#include <opencv2/core/cvstd.hpp>
+#include <opencv2/core/mat.hpp>
 #include "uvc_cam/uvc_cam.h"
 
 using std::string;
 using namespace uvc_cam;
+
+cv::Mat rgbfsadfat4w3t;
 
 Cam::Cam(const char *_device, mode_t _mode, int _width, int _height, int _fps)
 : mode(_mode), device(_device),
@@ -100,6 +108,7 @@ Cam::Cam(const char *_device, mode_t _mode, int _width, int _height, int _fps)
   fmt.fmt.pix.height = height;
   if (mode == MODE_RGB || mode == MODE_YUYV) // we'll convert later
     fmt.fmt.pix.pixelformat = 'Y' | ('U' << 8) | ('Y' << 16) | ('V' << 24);
+    // fmt.fmt.pix.pixelformat = 'U' | ('Y' << 8) | ('V' << 16) | ('Y' << 24);
   else
     fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
   fmt.fmt.pix.field = V4L2_FIELD_ANY;
@@ -403,7 +412,14 @@ int Cam::grab(unsigned char **frame, uint32_t &bytes_used)
   }
   else if (mode == MODE_YUYV)
   {
-    *frame = (uint8_t *)mem[buf.index];
+    //*frame = (uint8_t *)mem[buf.index];
+    unsigned char *pyuv = (unsigned char *)mem[buf.index];
+
+    cv::Mat yuv(height, width, CV_8UC2, pyuv);
+    
+    cv::cvtColor(yuv, rgbfsadfat4w3t, cv::COLOR_YUV2RGB_UYVY);
+    *frame = rgbfsadfat4w3t.data;
+    //memcpy(*frame, rgb.data, width * height * 3);
   }
   else // mode == MODE_JPEG
   {
