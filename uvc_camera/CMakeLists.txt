@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS camera_info_manager image_transport node
 
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS thread system)
+find_package(OpenCV REQUIRED)
 #find_package(V4L2 REQUIRED)
 set(V4L2_LIBRARIES v4l2)
 
@@ -66,6 +67,7 @@ catkin_package(
 include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library
@@ -85,14 +87,15 @@ include_directories(
 #   ${catkin_LIBRARIES}
 # )
 
+
 add_library(nodelet_uvc_camera src/nodelets.cpp src/camera.cpp src/stereo.cpp src/uvc_cam.cpp)
-target_link_libraries(nodelet_uvc_camera ${Boost_LIBRARIES} ${V4L2_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(nodelet_uvc_camera ${Boost_LIBRARIES} ${OpenCV_LIBS} ${V4L2_LIBRARIES} ${catkin_LIBRARIES})
 
 add_executable(uvc_camera_node src/camera_node.cpp src/camera.cpp src/uvc_cam.cpp)
-target_link_libraries(uvc_camera_node ${Boost_LIBRARIES} ${V4L2_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(uvc_camera_node ${Boost_LIBRARIES} ${V4L2_LIBRARIES} ${OpenCV_LIBS} ${catkin_LIBRARIES})
 
 add_executable(uvc_stereo_node src/stereo_node.cpp src/stereo.cpp src/uvc_cam.cpp)
-target_link_libraries(uvc_stereo_node ${Boost_LIBRARIES} ${V4L2_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(uvc_stereo_node ${Boost_LIBRARIES} ${OpenCV_LIBS} ${V4L2_LIBRARIES} ${catkin_LIBRARIES})
 
 #############
 ## Install ##
@@ -128,9 +131,11 @@ install(FILES
 # )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
-install(DIRECTORY launch
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
+# install(FILES
+#   # myfile1
+#   # myfile2
+#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+# )
 
 #############
 ## Testing ##
